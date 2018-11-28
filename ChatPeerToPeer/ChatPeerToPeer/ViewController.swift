@@ -87,6 +87,24 @@ class ViewController: UIViewController, UITextFieldDelegate, MCSessionDelegate, 
         self.browserVC.dismiss(animated: true, completion: nil)
     }
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        self.sendMessage()
+        return true
+    }
     
+    func sendMessage() {
+        let message: String = self.sendText.text!
+        self.sendText.text = ""
+        let data: Data = message.data(using: String.Encoding(rawValue: String.Encoding.utf8.rawValue))!
+        var error: NSError?
+        do {
+            try self.session.send(data, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.unreliable)
+        } catch let error1 as NSError {
+            error = error1
+        }
+        NSLog("%@", error!)
+        self.messageReception(message as NSString, peer: self.peerID)
+    }
 }
 
